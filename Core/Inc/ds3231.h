@@ -15,7 +15,7 @@
 #define DS3231_ALARM_1_HOUR_REG 		    0x09
 #define DS3231_ALARM_1_DAY_REG 		    	0x0A
 
-#define ANA_SAYFA_MAX_SATIR					7
+#define ANA_SAYFA_MAX_SATIR					6
 #define TELEFON_MAX_SATIR					2
 
 typedef struct

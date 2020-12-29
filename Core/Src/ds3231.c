@@ -135,6 +135,7 @@ void anasayfa_ac(uint8_t secili)
 		ssd1306_SetCursor(2, 38);
 		ssd1306_WriteString("->Saat Yuzu", Font_11x18, White);
 		ssd1306_UpdateScreen();
+		break;
 	case 6:
 		ssd1306_SetCursor(2, 0);
 		ssd1306_WriteString("Sicaklik", Font_11x18, White);
@@ -143,6 +144,7 @@ void anasayfa_ac(uint8_t secili)
 		ssd1306_SetCursor(2, 38);
 		ssd1306_WriteString("->Saat Ayarla", Font_11x18, White);
 		ssd1306_UpdateScreen();
+		break;
 	default:
 		break;
 	}
