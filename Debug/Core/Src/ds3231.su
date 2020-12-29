@@ -3,5 +3,6 @@ ds3231.c:11:16:B2D	16	static
 ds3231.c:17:6:ds3231_zaman_oku	40	static
 ds3231.c:34:6:ds3231_zaman_ayarla	32	static
 ds3231.c:53:6:menu_ac	16	static
-ds3231.c:89:6:anasayfa_ac	16	static
-ds3231.c:155:6:saat_goster	8	static
+ds3231.c:90:6:nabiz_menu_ac	16	static
+ds3231.c:100:6:anasayfa_ac	16	static
+ds3231.c:166:6:saat_goster	8	static

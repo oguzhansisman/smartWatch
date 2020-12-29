@@ -254,6 +254,62 @@ void EXTI4_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+	if(timer_durum == 1)
+	{
+		switch (lcd.menu)
+		{
+		case ANA_SAYFA:
+			switch(lcd.secili)
+			{
+			case 1:
+				lcd.secili = 1;
+				lcd.menu = NABIZ;
+				menu_ac(lcd.menu, lcd.secili);
+			}
+//			menu_ac(ANA_SAYFA, lcd.secili);
+			break;
+		case NABIZ:
+			lcd.menu = ANA_SAYFA;
+			lcd.secili = 1;
+			menu_ac(lcd.menu, lcd.secili);
+			break;
+		case ADIM:
+			menu_ac(ADIM, 1);
+			break;
+		case TELEFON:
+			if(lcd.secili == TELEFON_MAX_SATIR)
+			{
+				lcd.secili = 1;
+			}
+			else
+			{
+				lcd.secili = 2;
+			}
+			menu_ac(lcd.menu, lcd.secili);
+		case SICAKLIK:
+			menu_ac(lcd.menu, 1);
+		default:
+			break;
+		}
+		HAL_TIM_Base_Start_IT(&htim1);
+		timer_durum = 0;
+	}
+	else
+	{
+	}
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM1 break interrupt.
   */
 void TIM1_BRK_IRQHandler(void)

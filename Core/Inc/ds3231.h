@@ -28,6 +28,7 @@ typedef struct
 enum
 {
 	ANA_SAYFA,
+	NABIZ,
 	ADIM,
 	TELEFON,
 	SICAKLIK

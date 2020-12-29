@@ -57,6 +57,9 @@ void menu_ac(uint8_t menu, uint8_t secili)
 		case ANA_SAYFA:
 			anasayfa_ac(secili);
 			break;
+		case NABIZ:
+			nabiz_menu_ac(secili);
+			break;
 		case ADIM:
 			printf("Bugün attıgınız adım sayisi 12\n");
 			break;
@@ -84,7 +87,15 @@ void menu_ac(uint8_t menu, uint8_t secili)
 	}
 }
 
-
+void nabiz_menu_ac(uint8_t secili)
+{
+	ssd1306_Fill(Black);
+	ssd1306_SetCursor(2, 0);
+	ssd1306_WriteString("Nabiz : 90", Font_11x18, White);
+	ssd1306_SetCursor(2, 19);
+	ssd1306_WriteString("->Geri don", Font_11x18, White);
+	ssd1306_UpdateScreen();
+}
 
 void anasayfa_ac(uint8_t secili)
 {
