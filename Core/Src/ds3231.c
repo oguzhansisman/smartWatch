@@ -61,30 +61,78 @@ void menu_ac(uint8_t menu, uint8_t secili)
 			nabiz_menu_ac(secili);
 			break;
 		case ADIM:
-			printf("Bugün attıgınız adım sayisi 12\n");
+			adim_menu_ac(secili);
 			break;
 		case TELEFON:
-			printf("Telefona baglan");
-			switch (secili)
-			{
-			case 1:
-				printf("->Baglantiyi kes\n");
-				printf("Baglan");
-				break;
-			case 2:
-				printf("Baglantiyi kes\n");
-				printf("->Baglan");
-				break;
-			default:
-				break;
-			}
+			telefon_menu_ac(secili);
 			break;
 		case SICAKLIK:
-			printf("Anlik ortam sicakligi: 25");
+			sicaklik_menu_ac();
+			break;
+		case SAAT:
+			saat_goster();
 			break;
 		default:
 			break;
 	}
+}
+
+void sicaklik_menu_ac()
+{
+	ssd1306_Fill(Black);
+	ssd1306_SetCursor(2, 0);
+	ssd1306_WriteString("Sicaklik: 30", Font_11x18, White);
+	ssd1306_SetCursor(2, 19);
+	ssd1306_WriteString("->Geri don", Font_11x18, White);
+	ssd1306_UpdateScreen();
+}
+
+void telefon_menu_ac(uint8_t secili)
+{
+	switch(secili)
+	{
+	case 1:
+		ssd1306_Fill(Black);
+		ssd1306_SetCursor(2, 0);
+		ssd1306_WriteString("->Tlf Bagla", Font_11x18, White);
+		ssd1306_SetCursor(2, 19);
+		ssd1306_WriteString("Tlf Bag.Kes", Font_11x18, White);
+		ssd1306_SetCursor(2, 38);
+		ssd1306_WriteString("Geri Don", Font_11x18, White);
+		ssd1306_UpdateScreen();
+		break;
+	case 2:
+		ssd1306_Fill(Black);
+		ssd1306_SetCursor(2, 0);
+		ssd1306_WriteString("Tlf Bagla", Font_11x18, White);
+		ssd1306_SetCursor(2, 19);
+		ssd1306_WriteString("->Tlf Bag.Kes", Font_11x18, White);
+		ssd1306_SetCursor(2, 38);
+		ssd1306_WriteString("Geri Don", Font_11x18, White);
+		ssd1306_UpdateScreen();
+		break;
+	case 3:
+		ssd1306_Fill(Black);
+		ssd1306_SetCursor(2, 0);
+		ssd1306_WriteString("Tlf Bagla", Font_11x18, White);
+		ssd1306_SetCursor(2, 19);
+		ssd1306_WriteString("Tlf Bag.Kes", Font_11x18, White);
+		ssd1306_SetCursor(2, 38);
+		ssd1306_WriteString("->Geri Don", Font_11x18, White);
+		ssd1306_UpdateScreen();
+		break;
+	}
+
+}
+
+void adim_menu_ac(uint8_t secili)
+{
+	ssd1306_Fill(Black);
+	ssd1306_SetCursor(2, 0);
+	ssd1306_WriteString("Adim Sayisi: 90", Font_11x18, White);
+	ssd1306_SetCursor(2, 19);
+	ssd1306_WriteString("->Geri don", Font_11x18, White);
+	ssd1306_UpdateScreen();
 }
 
 void nabiz_menu_ac(uint8_t secili)
@@ -165,10 +213,15 @@ void anasayfa_ac(uint8_t secili)
 
 void saat_goster()
 {
+
+	zaman.saat = 21;
+	zaman.dakika = 45;
+	zaman.saniye = 5;
 	sprintf(saat, "%02d", zaman.saat);
 	sprintf(dakika, "%02d", zaman.dakika);
 	sprintf(saniye, "%02d", zaman.saniye);
 
+	ssd1306_Fill(Black);
 	ssd1306_SetCursor(2, 0);
 	ssd1306_WriteString(saat, Font_11x18, White);
 	ssd1306_WriteString(".", Font_11x18, White);

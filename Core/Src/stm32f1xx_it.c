@@ -227,7 +227,14 @@ void EXTI4_IRQHandler(void)
 			menu_ac(ANA_SAYFA, lcd.secili);
 			break;
 		case ADIM:
+			lcd.menu = ADIM;
+			lcd.secili = 1;
 			menu_ac(ADIM, 1);
+			break;
+		case NABIZ:
+			lcd.menu = NABIZ;
+			lcd.secili = 1;
+			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case TELEFON:
 			if(lcd.secili == TELEFON_MAX_SATIR)
@@ -236,11 +243,14 @@ void EXTI4_IRQHandler(void)
 			}
 			else
 			{
-				lcd.secili = 2;
+				lcd.secili ++;
 			}
 			menu_ac(lcd.menu, lcd.secili);
+			break;
 		case SICAKLIK:
+			lcd.secili = 1;
 			menu_ac(lcd.menu, 1);
+			break;
 		default:
 			break;
 		}
@@ -270,33 +280,70 @@ void EXTI9_5_IRQHandler(void)
 		case ANA_SAYFA:
 			switch(lcd.secili)
 			{
-			case 1:
-				lcd.secili = 1;
+			case 1:				//nabiz
 				lcd.menu = NABIZ;
+				lcd.secili = 1;
 				menu_ac(lcd.menu, lcd.secili);
+				break;
+			case 2:				//adim
+				lcd.menu = ADIM;
+				lcd.secili = 1;
+				menu_ac(lcd.menu, lcd.secili);
+				break;
+			case 3:				//tel
+				lcd.menu = TELEFON;
+				lcd.secili = 1;
+				menu_ac(lcd.menu, lcd.secili);
+				break;
+			case 4:			//sicaklik
+				lcd.menu = SICAKLIK;
+				lcd.secili = 1;
+				menu_ac(lcd.menu, lcd.secili);
+				break;
+			case 5:
+				lcd.menu = SAAT;
+				lcd.secili = 1;
+				menu_ac(lcd.menu, lcd.secili);
+			default:
+				break;
 			}
-//			menu_ac(ANA_SAYFA, lcd.secili);
+			break;
+		case ADIM:
+			lcd.menu = ANA_SAYFA;
+			lcd.secili = 1;
+			menu_ac(lcd.menu, lcd.secili);
+			break;
+		case TELEFON:
+			switch(lcd.secili)
+			{
+			case 1:	//TODO: Telefona baglan secenegi aktif degil
+				break;
+			case 2: //TODO: Telefon baglanti kes secenegi aktif degil
+				break;
+			case 3:
+				lcd.menu = ANA_SAYFA;
+				lcd.secili = 1;
+				menu_ac(lcd.menu, lcd.secili);
+				break;
+			default:
+				break;
+			}
+			break;
+		case SICAKLIK:
+			lcd.menu = ANA_SAYFA;
+			lcd.secili = 1;
+			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case NABIZ:
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
 			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case ADIM:
-			menu_ac(ADIM, 1);
-			break;
-		case TELEFON:
-			if(lcd.secili == TELEFON_MAX_SATIR)
-			{
-				lcd.secili = 1;
-			}
-			else
-			{
-				lcd.secili = 2;
-			}
+		case SAAT:
+			lcd.menu = ANA_SAYFA;
+			lcd.secili = 1;
 			menu_ac(lcd.menu, lcd.secili);
-		case SICAKLIK:
-			menu_ac(lcd.menu, 1);
+			break;
 		default:
 			break;
 		}

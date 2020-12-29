@@ -16,7 +16,7 @@
 #define DS3231_ALARM_1_DAY_REG 		    	0x0A
 
 #define ANA_SAYFA_MAX_SATIR					6
-#define TELEFON_MAX_SATIR					2
+#define TELEFON_MAX_SATIR					3
 
 typedef struct
 {
@@ -31,7 +31,8 @@ enum
 	NABIZ,
 	ADIM,
 	TELEFON,
-	SICAKLIK
+	SICAKLIK,
+	SAAT
 };
 
 typedef struct
@@ -78,5 +79,10 @@ void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zam
 void menu_ac(uint8_t menu, uint8_t secili);
 
 void anasayfa_ac(uint8_t secili);
+void telefon_menu_ac(uint8_t secili);
+void adim_menu_ac(uint8_t secili);
+void nabiz_menu_ac(uint8_t secili);
+void sicaklik_menu_ac();
+void saat_goster();
 
 #endif
