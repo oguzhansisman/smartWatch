@@ -57,10 +57,11 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 /* USER CODE BEGIN EV */
-
+extern TIM_HandleTypeDef htim3;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -211,6 +212,10 @@ void EXTI4_IRQHandler(void)
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
   /* USER CODE BEGIN EXTI4_IRQn 1 */
+  HAL_TIM_Base_Stop_IT(&htim3);
+  htim3.Instance->CNT = 0x00;
+  HAL_TIM_Base_Start_IT(&htim3);
+
 
 	if(timer_durum == 1)
 	{
@@ -225,7 +230,7 @@ void EXTI4_IRQHandler(void)
 			{
 				lcd.secili ++;
 			}
-			menu_ac(ANA_SAYFA, lcd.secili);
+//			menu_ac(ANA_SAYFA, lcd.secili);
 			break;
 		case ADIM:
 			lcd.menu = ADIM;
@@ -235,7 +240,7 @@ void EXTI4_IRQHandler(void)
 		case NABIZ:
 			lcd.menu = NABIZ;
 			lcd.secili = 1;
-			menu_ac(lcd.menu, lcd.secili);
+//			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case TELEFON:
 			if(lcd.secili == TELEFON_MAX_SATIR)
@@ -246,11 +251,11 @@ void EXTI4_IRQHandler(void)
 			{
 				lcd.secili ++;
 			}
-			menu_ac(lcd.menu, lcd.secili);
+//			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case SICAKLIK:
 			lcd.secili = 1;
-			menu_ac(lcd.menu, 1);
+//			menu_ac(lcd.menu, 1);
 			break;
 		default:
 			break;
@@ -265,6 +270,20 @@ void EXTI4_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles DMA1 channel6 global interrupt.
+  */
+void DMA1_Channel6_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_i2c1_tx);
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line[9:5] interrupts.
   */
 void EXTI9_5_IRQHandler(void)
@@ -274,6 +293,11 @@ void EXTI9_5_IRQHandler(void)
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  HAL_TIM_Base_Stop_IT(&htim3);
+  htim3.Instance->CNT = 0x00;
+  HAL_TIM_Base_Start_IT(&htim3);
+
 	if(timer_durum == 1)
 	{
 		switch (lcd.menu)
@@ -284,27 +308,27 @@ void EXTI9_5_IRQHandler(void)
 			case 1:				//nabiz
 				lcd.menu = NABIZ;
 				lcd.secili = 1;
-				menu_ac(lcd.menu, lcd.secili);
+//				menu_ac(lcd.menu, lcd.secili);
 				break;
 			case 2:				//adim
 				lcd.menu = ADIM;
 				lcd.secili = 1;
-				menu_ac(lcd.menu, lcd.secili);
+//				menu_ac(lcd.menu, lcd.secili);
 				break;
 			case 3:				//tel
 				lcd.menu = TELEFON;
 				lcd.secili = 1;
-				menu_ac(lcd.menu, lcd.secili);
+//				menu_ac(lcd.menu, lcd.secili);
 				break;
 			case 4:			//sicaklik
 				lcd.menu = SICAKLIK;
 				lcd.secili = 1;
-				menu_ac(lcd.menu, lcd.secili);
+//				menu_ac(lcd.menu, lcd.secili);
 				break;
 			case 5:
 				lcd.menu = SAAT;
 				lcd.secili = 1;
-				menu_ac(lcd.menu, lcd.secili);
+//				menu_ac(lcd.menu, lcd.secili);
 			default:
 				break;
 			}
@@ -312,7 +336,7 @@ void EXTI9_5_IRQHandler(void)
 		case ADIM:
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-			menu_ac(lcd.menu, lcd.secili);
+//			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case TELEFON:
 			switch(lcd.secili)
@@ -324,7 +348,7 @@ void EXTI9_5_IRQHandler(void)
 			case 3:
 				lcd.menu = ANA_SAYFA;
 				lcd.secili = 1;
-				menu_ac(lcd.menu, lcd.secili);
+//				menu_ac(lcd.menu, lcd.secili);
 				break;
 			default:
 				break;
@@ -333,17 +357,17 @@ void EXTI9_5_IRQHandler(void)
 		case SICAKLIK:
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-			menu_ac(lcd.menu, lcd.secili);
+//			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case NABIZ:
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-			menu_ac(lcd.menu, lcd.secili);
+//			menu_ac(lcd.menu, lcd.secili);
 			break;
 		case SAAT:
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-			menu_ac(lcd.menu, lcd.secili);
+//			menu_ac(lcd.menu, lcd.secili);
 			break;
 		default:
 			break;

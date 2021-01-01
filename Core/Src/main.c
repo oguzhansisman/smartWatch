@@ -45,9 +45,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_tx;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 
@@ -56,9 +58,11 @@ TIM_HandleTypeDef htim2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -101,12 +105,14 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-
+  	_5_saniye = 0;
     sistem_zamani.clock_tick_1_ms = 0;
 
 	ssd1306_Init();
@@ -114,20 +120,22 @@ int main(void)
 	ssd1306_Fill(Black);
 	ssd1306_UpdateScreen();
 
-	ds3231_cfg.ay = 12;
-	ds3231_cfg.gun = 1;
-	ds3231_cfg.ay_gun = 28;
-	ds3231_cfg.yil = 20;
-	ds3231_cfg.saat = 18;
-	ds3231_cfg.dakika = 49;
-	ds3231_cfg.saniye = 50;
+	ds3231_cfg.ay = 1;
+	ds3231_cfg.gun = CUMA;
+	ds3231_cfg.ay_gun = 1;
+	ds3231_cfg.yil = 21;
+	ds3231_cfg.saat = 13;
+	ds3231_cfg.dakika = 53;
+	ds3231_cfg.saniye = 40;
 
 	timer_durum = 1;
 	lcd.secili = 1;
 	lcd.menu = ANA_SAYFA;
 	HAL_I2C_DeInit(&hi2c1);
 	HAL_I2C_Init(&hi2c1);
+	ds3231_zaman_ayarla(&hi2c1, 0xD0, ds3231_cfg);
 	HAL_TIM_Base_Start_IT(&htim2);
+	HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -150,17 +158,19 @@ int main(void)
 	  }
 	  if(sistem_zamani._50Hz_bayrak == 1)
 	  {
-//		  ssd1306_UpdateScreen();
+
 		  sistem_zamani._50Hz_bayrak = 0;
 	  }
 	  if(sistem_zamani._100Hz_bayrak == 1)
 	  {
 
+		  ds3231_zaman_oku(&hi2c1, 0xD0, &zaman);
+
 		  sistem_zamani._100Hz_bayrak = 0;
 	  }
 	  if(sistem_zamani._200Hz_bayrak == 1)
 	  {
-
+		  menu_ac(lcd.menu, lcd.secili);
 		  sistem_zamani._200Hz_bayrak = 0;
 	  }
 //	  if(sistem_zamani._500Hz_bayrak == 1)
@@ -262,7 +272,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 32000;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 20;
+  htim1.Init.Period = 30;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -306,7 +316,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 1;
+  htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 8000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -329,6 +339,67 @@ static void MX_TIM2_Init(void)
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 1000;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 8000;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
 
 }
 
@@ -396,7 +467,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  {
 			  sistem_zamani.zaman_asimi = 1;
 		  }
-		  sistem_zamani._1Hz_bayrak= 1;
+		  sistem_zamani._1Hz_bayrak = 1;
 	  }
 	  if(sistem_zamani.clock_tick_1_ms % 500 == 0 )
 	  {
@@ -439,8 +510,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		  sistem_zamani._500Hz_bayrak = 1;
 //	  }
 		HAL_TIM_Base_Start_IT(&htim2);
-  }
 
+  }
+  else if(htim == &htim3)
+  {
+	  _5_saniye ++;
+	  if(_5_saniye == 5)
+	  {
+		  lcd.menu = SAAT;
+		  lcd.secili = 1;
+		  menu_ac(lcd.menu, lcd.secili);
+		  HAL_TIM_Base_Stop_IT(&htim3);
+		  htim3.Instance->CNT = 0x00;
+	  }
+  }
 }
 
 

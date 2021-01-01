@@ -25,26 +25,27 @@ void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zam
 	zaman->saniye = B2D(temp[1]);
 	zaman->dakika = B2D(temp[2]);
 	zaman->saat   = B2D(temp[3]);
-	zaman->ay_gun = B2D(temp[4]);
-	zaman->ay     = B2D(temp[5]);
-	zaman->gun    = B2D(temp[6]);
+	zaman->gun    = B2D(temp[4]);
+	zaman->ay_gun = B2D(temp[5]);
+	zaman->ay     = B2D(temp[6]);
 	zaman->yil    = B2D(temp[7]);
 }
 
-void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, ds3231_cfg_t zaman)
+void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const ds3231_cfg_t zaman)
 {
 	uint8_t temp[8];
 	temp[0] = 0x00;
 	temp[1] = D2B(zaman.saniye);
 	temp[2] = D2B(zaman.dakika);
 	temp[3] = D2B(zaman.saat);
-	temp[4] = D2B(zaman.ay_gun);
-	temp[5] = D2B(zaman.ay);
-	temp[6] = zaman.gun;
+	temp[4] = zaman.gun;
+	temp[5] = D2B(zaman.ay_gun);
+	temp[6] = D2B(zaman.ay);
 	temp[7] = D2B(zaman.yil);
 
-//	HAL_I2C_Master_Transmit(hi2c, DevAddress, temp, 8, 500);
-	HAL_I2C_Master_Transmit_DMA(hi2c, DevAddress, temp, 8);
+	HAL_I2C_Master_Transmit(hi2c, DevAddress, temp, 8, 500);
+//	HAL_I2C_Master_Transmit_DMA(hi2c, DevAddress, temp, 8);
+
 }
 
 
@@ -214,9 +215,6 @@ void anasayfa_ac(uint8_t secili)
 void saat_goster()
 {
 
-	zaman.saat = 21;
-	zaman.dakika = 45;
-	zaman.saniye = 5;
 	sprintf(saat, "%02d", zaman.saat);
 	sprintf(dakika, "%02d", zaman.dakika);
 	sprintf(saniye, "%02d", zaman.saniye);

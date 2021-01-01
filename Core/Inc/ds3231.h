@@ -69,13 +69,23 @@ typedef struct
     uint8_t  zaman_asimi;
 }task_clock_t;
 
+enum
+{
+	PAZARTESI = 1,
+	SALI,
+	CARSAMBA,
+	PERSEMBE,
+	CUMA,
+	CUMARTESI,
+	PAZAR
+};
 
 task_clock_t sistem_zamani;
 zaman_t zaman;
 ds3231_cfg_t ds3231_cfg;
 lcd_t lcd;
 uint8_t timer_durum;
-
+uint8_t _5_saniye;
 
 char string[20];
 char saat[20];
@@ -84,7 +94,7 @@ char saniye[20];
 char tire;
 char deneme[20];
 uint32_t buton_deneme;
-void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, ds3231_cfg_t zaman);
+void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const ds3231_cfg_t zaman);
 
 void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zaman);
 
