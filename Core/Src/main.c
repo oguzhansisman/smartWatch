@@ -47,6 +47,7 @@
 I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 
@@ -57,6 +58,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -101,7 +103,12 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_TIM1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+
+
+    sistem_zamani.clock_tick_1_ms = 0;
+
 	ssd1306_Init();
 
 	ssd1306_Fill(Black);
@@ -120,6 +127,7 @@ int main(void)
 	lcd.menu = ANA_SAYFA;
 	HAL_I2C_DeInit(&hi2c1);
 	HAL_I2C_Init(&hi2c1);
+	HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,9 +138,36 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-//		ds3231_zaman_oku(&hi2c1, 0xD0, &zaman);
+	  if(sistem_zamani._1Hz_bayrak == 1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
+		  sistem_zamani._1Hz_bayrak = 0;
+	  }
+	  if(sistem_zamani._2Hz_bayrak == 1)
+	  {
 
+		  sistem_zamani._2Hz_bayrak = 0;
+	  }
+	  if(sistem_zamani._50Hz_bayrak == 1)
+	  {
+//		  ssd1306_UpdateScreen();
+		  sistem_zamani._50Hz_bayrak = 0;
+	  }
+	  if(sistem_zamani._100Hz_bayrak == 1)
+	  {
 
+		  sistem_zamani._100Hz_bayrak = 0;
+	  }
+	  if(sistem_zamani._200Hz_bayrak == 1)
+	  {
+
+		  sistem_zamani._200Hz_bayrak = 0;
+	  }
+//	  if(sistem_zamani._500Hz_bayrak == 1)
+//	  {
+//
+//		  sistem_zamani._500Hz_bayrak = 0;
+//	  }
 
   }
   /* USER CODE END 3 */
@@ -253,6 +288,51 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 1;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 8000;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -301,10 +381,69 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_TIM_PeriodElapsedCallback could be implemented in the user file
    */
-	timer_durum = 1;
-	HAL_TIM_Base_Stop_IT(&htim1);
+  if(htim == &htim1)
+  {
+		timer_durum = 1;
+		HAL_TIM_Base_Stop_IT(&htim1);
+  }
+  else if (htim == &htim2)
+  {
+	  HAL_TIM_Base_Stop_IT(&htim2);
+	  sistem_zamani.clock_tick_1_ms++;
+	  if(sistem_zamani.clock_tick_1_ms % 1000 == 0 )
+	  {
+		  if(sistem_zamani._1Hz_bayrak == 1)
+		  {
+			  sistem_zamani.zaman_asimi = 1;
+		  }
+		  sistem_zamani._1Hz_bayrak= 1;
+	  }
+	  if(sistem_zamani.clock_tick_1_ms % 500 == 0 )
+	  {
+		  if(sistem_zamani._2Hz_bayrak == 1)
+		  {
+			  sistem_zamani.zaman_asimi = 1;
+		  }
+		  sistem_zamani._2Hz_bayrak = 1;
+	  }
+	  if(sistem_zamani.clock_tick_1_ms % 20 == 0 )
+	  {
+		  if(sistem_zamani._50Hz_bayrak == 1)
+		  {
+			  sistem_zamani.zaman_asimi = 1;
+		  }
+		  sistem_zamani._50Hz_bayrak = 1;
+	  }
+	  if(sistem_zamani.clock_tick_1_ms % 10 == 0)
+	  {
+		  if(sistem_zamani._100Hz_bayrak == 1)
+		  {
+			  sistem_zamani.zaman_asimi = 1;
+		  }
+		  sistem_zamani._100Hz_bayrak = 1;
+	  }
+	  if(sistem_zamani.clock_tick_1_ms % 5 == 0)
+	  {
+		  if(sistem_zamani._200Hz_bayrak == 1)
+		  {
+			  sistem_zamani.zaman_asimi = 1;
+		  }
+		  sistem_zamani._200Hz_bayrak = 1;
+	  }
+//	  if(sistem_zamani.clock_tick_1_ms % 2 == 0)
+//	  {
+//		  if(sistem_zamani._500Hz_bayrak == 1)
+//		  {
+//			  sistem_zamani.zaman_asimi = 1;
+//		  }
+//		  sistem_zamani._500Hz_bayrak = 1;
+//	  }
+		HAL_TIM_Base_Start_IT(&htim2);
+  }
 
 }
+
+
 /* USER CODE END 4 */
 
 /**

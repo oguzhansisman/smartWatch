@@ -57,13 +57,25 @@ typedef struct
     uint8_t saniye;
 }zaman_t;
 
+typedef struct
+{
+    uint32_t clock_tick_1_ms;
+    uint8_t  _500Hz_bayrak;
+    uint8_t  _200Hz_bayrak;
+    uint8_t  _100Hz_bayrak;
+    uint8_t  _50Hz_bayrak;
+    uint8_t  _2Hz_bayrak;
+    uint8_t  _1Hz_bayrak;
+    uint8_t  zaman_asimi;
+}task_clock_t;
 
 
-
+task_clock_t sistem_zamani;
 zaman_t zaman;
 ds3231_cfg_t ds3231_cfg;
 lcd_t lcd;
 uint8_t timer_durum;
+
 
 char string[20];
 char saat[20];
