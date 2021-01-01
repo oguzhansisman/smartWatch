@@ -62,6 +62,7 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 /* USER CODE BEGIN EV */
 extern TIM_HandleTypeDef htim3;
+extern I2C_HandleTypeDef hi2c1;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -208,14 +209,13 @@ void SysTick_Handler(void)
 void EXTI4_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI4_IRQn 0 */
-
+	//HAREKET BUTONU
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
   /* USER CODE BEGIN EXTI4_IRQn 1 */
   HAL_TIM_Base_Stop_IT(&htim3);
   htim3.Instance->CNT = 0x00;
   HAL_TIM_Base_Start_IT(&htim3);
-
 
 	if(timer_durum == 1)
 	{
@@ -233,6 +233,7 @@ void EXTI4_IRQHandler(void)
 //			menu_ac(ANA_SAYFA, lcd.secili);
 			break;
 		case ADIM:
+
 			lcd.menu = ADIM;
 			lcd.secili = 1;
 			menu_ac(ADIM, 1);
@@ -257,6 +258,47 @@ void EXTI4_IRQHandler(void)
 			lcd.secili = 1;
 //			menu_ac(lcd.menu, 1);
 			break;
+		case SAAT:
+			lcd.secili = 1;
+		case SAAT_AYAR:
+			switch(zaman_ayarlama.saat_ayar_digit)
+			{
+			case SAAT_ONDALIK:
+				zaman_ayarlama.saat += 10;
+				if(zaman_ayarlama.saat / 10 == 6 )
+				{
+					zaman_ayarlama.saat -= 60;
+				}
+				break;
+			case SAAT_BIRLIK:
+				zaman_ayarlama.saat += 1;
+				break;
+			case DAKIKA_ONDALIK:
+				zaman_ayarlama.dakika += 10;
+				if(zaman_ayarlama.dakika / 10 == 6 )
+				{
+					zaman_ayarlama.dakika -= 60;
+				}
+				break;
+			case DAKIKA_BIRLIK:
+				zaman_ayarlama.dakika += 1;
+				break;
+			case SANIYE_ONDALIK:
+				zaman_ayarlama.saniye += 10;
+				if(zaman_ayarlama.saniye / 10 == 6 )
+				{
+					zaman_ayarlama.saniye -= 60;
+				}
+				break;
+			case SANIYE_BIRLIK:
+				zaman_ayarlama.saniye += 1;
+				break;
+			case SET_SAAT:
+				zaman_ayarlama.saat_ayar_digit = SAAT_ONDALIK;
+				break;
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -289,7 +331,7 @@ void DMA1_Channel6_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
+	//SECME BUTONU
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
@@ -325,10 +367,15 @@ void EXTI9_5_IRQHandler(void)
 				lcd.secili = 1;
 //				menu_ac(lcd.menu, lcd.secili);
 				break;
-			case 5:
+			case 5:			//SAAT YUZU
 				lcd.menu = SAAT;
 				lcd.secili = 1;
 //				menu_ac(lcd.menu, lcd.secili);
+				break;
+			case 6:			//saat ayar
+				lcd.menu = SAAT_AYAR;
+				lcd.secili = 1;
+				break;
 			default:
 				break;
 			}
@@ -368,6 +415,34 @@ void EXTI9_5_IRQHandler(void)
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
 //			menu_ac(lcd.menu, lcd.secili);
+			break;
+		case SAAT_AYAR:
+			switch(zaman_ayarlama.saat_ayar_digit)
+			{
+			case SAAT_ONDALIK:
+				zaman_ayarlama.saat_ayar_digit = SAAT_BIRLIK;
+				break;
+			case SAAT_BIRLIK:
+				zaman_ayarlama.saat_ayar_digit = DAKIKA_ONDALIK;
+				break;
+			case DAKIKA_ONDALIK:
+				zaman_ayarlama.saat_ayar_digit = DAKIKA_BIRLIK;
+				break;
+			case DAKIKA_BIRLIK:
+				zaman_ayarlama.saat_ayar_digit = SANIYE_ONDALIK;
+				break;
+			case SANIYE_ONDALIK:
+				zaman_ayarlama.saat_ayar_digit = SANIYE_BIRLIK;
+				break;
+			case SANIYE_BIRLIK:
+				zaman_ayarlama.saat_ayar_digit = SAAT_ONDALIK;
+				ds3231_zaman_ayarla(&hi2c1, 0xD0, zaman_ayarlama);
+				lcd.menu = ANA_SAYFA;
+				lcd.secili = 1;
+				break;
+			default:
+				break;
+			}
 			break;
 		default:
 			break;

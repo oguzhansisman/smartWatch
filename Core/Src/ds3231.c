@@ -31,17 +31,18 @@ void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zam
 	zaman->yil    = B2D(temp[7]);
 }
 
-void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const ds3231_cfg_t zaman)
+void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const saat_ayarlama_t zaman)
 {
 	uint8_t temp[8];
 	temp[0] = 0x00;
 	temp[1] = D2B(zaman.saniye);
 	temp[2] = D2B(zaman.dakika);
 	temp[3] = D2B(zaman.saat);
-	temp[4] = zaman.gun;
-	temp[5] = D2B(zaman.ay_gun);
-	temp[6] = D2B(zaman.ay);
-	temp[7] = D2B(zaman.yil);
+	//TODO: tarih ayarlanmasi eklenecek
+	temp[4] = PAZARTESI;
+	temp[5] = 19;
+	temp[6] = 4;
+	temp[7] = 20;
 
 	HAL_I2C_Master_Transmit(hi2c, DevAddress, temp, 8, 500);
 //	HAL_I2C_Master_Transmit_DMA(hi2c, DevAddress, temp, 8);
@@ -73,9 +74,28 @@ void menu_ac(uint8_t menu, uint8_t secili)
 		case SAAT:
 			saat_goster();
 			break;
+		case SAAT_AYAR:
+			saat_ayar_goster();
+			break;
 		default:
 			break;
 	}
+}
+
+void saat_ayar_goster()
+{
+	sprintf(zaman_ayarlama.c_saat  , "%02d", zaman_ayarlama.saat  );
+	sprintf(zaman_ayarlama.c_dakika, "%02d", zaman_ayarlama.dakika);
+	sprintf(zaman_ayarlama.c_saniye, "%02d", zaman_ayarlama.saniye);
+
+	ssd1306_Fill(Black);
+	ssd1306_SetCursor(2, 0);
+	ssd1306_WriteString(zaman_ayarlama.c_saat, Font_11x18, White);
+	ssd1306_WriteString(".", Font_11x18, White);
+	ssd1306_WriteString(zaman_ayarlama.c_dakika, Font_11x18, White);
+	ssd1306_WriteString(".", Font_11x18, White);
+	ssd1306_WriteString(zaman_ayarlama.c_saniye, Font_11x18, White);
+	ssd1306_UpdateScreen();
 }
 
 void sicaklik_menu_ac()

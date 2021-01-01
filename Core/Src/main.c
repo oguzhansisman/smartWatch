@@ -133,7 +133,7 @@ int main(void)
 	lcd.menu = ANA_SAYFA;
 	HAL_I2C_DeInit(&hi2c1);
 	HAL_I2C_Init(&hi2c1);
-	ds3231_zaman_ayarla(&hi2c1, 0xD0, ds3231_cfg);
+
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -272,7 +272,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 32000;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 30;
+  htim1.Init.Period = 50;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;

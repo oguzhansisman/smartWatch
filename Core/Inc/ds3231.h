@@ -25,6 +25,18 @@ typedef struct
 	uint8_t menu;
 }lcd_t;
 
+
+typedef struct
+{
+	uint8_t saat;
+	uint8_t dakika;
+	uint8_t saniye;
+	char c_saat[20];
+	char c_dakika[20];
+	char c_saniye[20];
+	uint8_t saat_ayar_digit;
+}saat_ayarlama_t;
+
 enum
 {
 	ANA_SAYFA,
@@ -32,7 +44,8 @@ enum
 	ADIM,
 	TELEFON,
 	SICAKLIK,
-	SAAT
+	SAAT,
+	SAAT_AYAR
 };
 
 typedef struct
@@ -71,6 +84,17 @@ typedef struct
 
 enum
 {
+	SAAT_ONDALIK,
+	SAAT_BIRLIK,
+	DAKIKA_ONDALIK,
+	DAKIKA_BIRLIK,
+	SANIYE_ONDALIK,
+	SANIYE_BIRLIK,
+	SET_SAAT
+};
+
+enum
+{
 	PAZARTESI = 1,
 	SALI,
 	CARSAMBA,
@@ -84,6 +108,8 @@ task_clock_t sistem_zamani;
 zaman_t zaman;
 ds3231_cfg_t ds3231_cfg;
 lcd_t lcd;
+saat_ayarlama_t zaman_ayarlama;
+
 uint8_t timer_durum;
 uint8_t _5_saniye;
 
@@ -91,12 +117,14 @@ char string[20];
 char saat[20];
 char dakika[20];
 char saniye[20];
+
 char tire;
 char deneme[20];
 uint32_t buton_deneme;
-void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const ds3231_cfg_t zaman);
+void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const saat_ayarlama_t zaman);
 
 void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zaman);
+void saat_ayar_goster();
 
 void menu_ac(uint8_t menu, uint8_t secili);
 
