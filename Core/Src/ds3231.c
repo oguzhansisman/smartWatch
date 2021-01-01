@@ -31,7 +31,7 @@ void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zam
 	zaman->yil    = B2D(temp[7]);
 }
 
-void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const saat_ayarlama_t zaman)
+void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, saat_ayarlama_t zaman)
 {
 	uint8_t temp[8];
 	temp[0] = 0x00;
@@ -44,6 +44,7 @@ void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const saa
 	temp[6] = 4;
 	temp[7] = 20;
 
+	while( ( HAL_I2C_GetState(hi2c) == HAL_I2C_STATE_BUSY ) || ( HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY ) );
 	HAL_I2C_Master_Transmit(hi2c, DevAddress, temp, 8, 500);
 //	HAL_I2C_Master_Transmit_DMA(hi2c, DevAddress, temp, 8);
 

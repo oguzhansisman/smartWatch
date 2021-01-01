@@ -45,6 +45,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
 DMA_HandleTypeDef hdma_i2c1_tx;
 
 TIM_HandleTypeDef htim1;
@@ -63,6 +64,7 @@ static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -110,6 +112,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
   	_5_saniye = 0;
@@ -120,14 +123,10 @@ int main(void)
 	ssd1306_Fill(Black);
 	ssd1306_UpdateScreen();
 
-	ds3231_cfg.ay = 1;
-	ds3231_cfg.gun = CUMA;
-	ds3231_cfg.ay_gun = 1;
-	ds3231_cfg.yil = 21;
-	ds3231_cfg.saat = 13;
-	ds3231_cfg.dakika = 53;
-	ds3231_cfg.saniye = 40;
-
+//	zaman_ayarlama.dakika = 11;
+//	zaman_ayarlama.saat = 19;
+//	zaman_ayarlama.saniye = 31;
+//	ds3231_zaman_ayarla(&hi2c1, 0xD0, zaman_ayarlama);
 	timer_durum = 1;
 	lcd.secili = 1;
 	lcd.menu = ANA_SAYFA;
@@ -148,7 +147,7 @@ int main(void)
 
 	  if(sistem_zamani._1Hz_bayrak == 1)
 	  {
-		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
 		  sistem_zamani._1Hz_bayrak = 0;
 	  }
 	  if(sistem_zamani._2Hz_bayrak == 1)
@@ -158,7 +157,7 @@ int main(void)
 	  }
 	  if(sistem_zamani._50Hz_bayrak == 1)
 	  {
-
+		  menu_ac(lcd.menu, lcd.secili);
 		  sistem_zamani._50Hz_bayrak = 0;
 	  }
 	  if(sistem_zamani._100Hz_bayrak == 1)
@@ -170,7 +169,7 @@ int main(void)
 	  }
 	  if(sistem_zamani._200Hz_bayrak == 1)
 	  {
-		  menu_ac(lcd.menu, lcd.secili);
+
 		  sistem_zamani._200Hz_bayrak = 0;
 	  }
 //	  if(sistem_zamani._500Hz_bayrak == 1)
@@ -248,6 +247,40 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.ClockSpeed = 100000;
+  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
 
 }
 
@@ -419,7 +452,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA4 PA5 */
   GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
@@ -427,8 +460,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11;
+  /*Configure GPIO pin : PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

@@ -121,7 +121,7 @@ char saniye[20];
 char tire;
 char deneme[20];
 uint32_t buton_deneme;
-void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, const saat_ayarlama_t zaman);
+void ds3231_zaman_ayarla(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, saat_ayarlama_t zaman);
 
 void ds3231_zaman_oku(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, zaman_t *zaman);
 void saat_ayar_goster();

@@ -271,7 +271,14 @@ void EXTI4_IRQHandler(void)
 				}
 				break;
 			case SAAT_BIRLIK:
-				zaman_ayarlama.saat += 1;
+				if(zaman_ayarlama.saat % 10 == 9)
+				{
+					zaman_ayarlama.saat = zaman_ayarlama.saat + 1 - 10;
+				}
+				else
+				{
+					zaman_ayarlama.saat = zaman_ayarlama.saat + 1 ;
+				}
 				break;
 			case DAKIKA_ONDALIK:
 				zaman_ayarlama.dakika += 10;
@@ -281,7 +288,14 @@ void EXTI4_IRQHandler(void)
 				}
 				break;
 			case DAKIKA_BIRLIK:
-				zaman_ayarlama.dakika += 1;
+				if(zaman_ayarlama.dakika % 10 == 9)
+				{
+					zaman_ayarlama.dakika = zaman_ayarlama.dakika + 1 - 10;
+				}
+				else
+				{
+					zaman_ayarlama.dakika = zaman_ayarlama.dakika + 1 ;
+				}
 				break;
 			case SANIYE_ONDALIK:
 				zaman_ayarlama.saniye += 10;
@@ -291,7 +305,14 @@ void EXTI4_IRQHandler(void)
 				}
 				break;
 			case SANIYE_BIRLIK:
-				zaman_ayarlama.saniye += 1;
+				if(zaman_ayarlama.saniye % 10 == 9)
+				{
+					zaman_ayarlama.saniye = zaman_ayarlama.saniye + 1 - 10;
+				}
+				else
+				{
+					zaman_ayarlama.saniye = zaman_ayarlama.saniye + 1 ;
+				}
 				break;
 			case SET_SAAT:
 				zaman_ayarlama.saat_ayar_digit = SAAT_ONDALIK;
@@ -437,6 +458,9 @@ void EXTI9_5_IRQHandler(void)
 			case SANIYE_BIRLIK:
 				zaman_ayarlama.saat_ayar_digit = SAAT_ONDALIK;
 				ds3231_zaman_ayarla(&hi2c1, 0xD0, zaman_ayarlama);
+				zaman_ayarlama.saniye = 0;
+				zaman_ayarlama.saat   = 0;
+				zaman_ayarlama.dakika = 0;
 				lcd.menu = ANA_SAYFA;
 				lcd.secili = 1;
 				break;
