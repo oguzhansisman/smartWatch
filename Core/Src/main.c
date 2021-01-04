@@ -115,7 +115,7 @@ int main(void)
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
-  	_5_saniye = 0;
+
     sistem_zamani.clock_tick_1_ms = 0;
 
 	ssd1306_Init();
@@ -147,30 +147,30 @@ int main(void)
 
 	  if(sistem_zamani._1Hz_bayrak == 1)
 	  {
-		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
-		  sistem_zamani._1Hz_bayrak = 0;
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);	//Test amaçlı yazılan 1 Hz'lik task.
+		  sistem_zamani._1Hz_bayrak = 0;			//Task bitiminde ilgili bayrak sıfırlanır.
 	  }
 	  if(sistem_zamani._2Hz_bayrak == 1)
 	  {
 
-		  sistem_zamani._2Hz_bayrak = 0;
+		  sistem_zamani._2Hz_bayrak = 0;			//Task bitiminde ilgili bayrak sıfırlanır.
 	  }
 	  if(sistem_zamani._50Hz_bayrak == 1)
 	  {
-		  menu_ac(lcd.menu, lcd.secili);
-		  sistem_zamani._50Hz_bayrak = 0;
+		  menu_ac(lcd.menu, lcd.secili);			//Ekran güncellenmesi yapılır.
+		  sistem_zamani._50Hz_bayrak = 0;			//Task bitiminde ilgili bayrak sıfırlanır.
 	  }
 	  if(sistem_zamani._100Hz_bayrak == 1)
 	  {
 
-		  ds3231_zaman_oku(&hi2c1, 0xD0, &zaman);
+		  ds3231_zaman_oku(&hi2c1, DS3231_SLAVE_ADDR, &zaman);		//RTC modülünden okunan veri zaman yapısına işlenir.
 
-		  sistem_zamani._100Hz_bayrak = 0;
+		  sistem_zamani._100Hz_bayrak = 0;			//Task bitiminde ilgili bayrak sıfırlanır.
 	  }
 	  if(sistem_zamani._200Hz_bayrak == 1)
 	  {
 
-		  sistem_zamani._200Hz_bayrak = 0;
+		  sistem_zamani._200Hz_bayrak = 0;			//Task bitiminde ilgili bayrak sıfırlanır.
 	  }
 //	  if(sistem_zamani._500Hz_bayrak == 1)
 //	  {
@@ -487,76 +487,61 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
    */
   if(htim == &htim1)
   {
-		timer_durum = 1;
-		HAL_TIM_Base_Stop_IT(&htim1);
+	  /*Buton debouncing önlemede kullanılan timer kesme oluşturdu*/
+	  timer_durum = 1;					//20 ms dolmus bayrağı 1 yap
+	  HAL_TIM_Base_Stop_IT(&htim1);		//Timer'ı durdur.
   }
   else if (htim == &htim2)
   {
-	  HAL_TIM_Base_Stop_IT(&htim2);
-	  sistem_zamani.clock_tick_1_ms++;
-	  if(sistem_zamani.clock_tick_1_ms % 1000 == 0 )
+	  /*Task yapısında kullanılan timer kesme oluşturdu.*/
+	  HAL_TIM_Base_Stop_IT(&htim2);			//Timer'ı durdur.
+	  sistem_zamani.clock_tick_1_ms++;		//1ms için tutulan değişkeni arttır.
+
+	  if(sistem_zamani.clock_tick_1_ms % 1000 == 0 )	//1000ms periyodu mu?
 	  {
 		  if(sistem_zamani._1Hz_bayrak == 1)
 		  {
-			  sistem_zamani.zaman_asimi = 1;
-		  }
-		  sistem_zamani._1Hz_bayrak = 1;
+			  sistem_zamani.zaman_asimi = 1;			//Bayrak 1 iken ikinci kez
+		  }												//gelinirse zaman aşımı
+		  sistem_zamani._1Hz_bayrak = 1;				//İlgili bayrağı kaldır
 	  }
-	  if(sistem_zamani.clock_tick_1_ms % 500 == 0 )
+	  if(sistem_zamani.clock_tick_1_ms % 500 == 0 )		//500ms periyodu mu?
 	  {
 		  if(sistem_zamani._2Hz_bayrak == 1)
 		  {
-			  sistem_zamani.zaman_asimi = 1;
-		  }
-		  sistem_zamani._2Hz_bayrak = 1;
+			  sistem_zamani.zaman_asimi = 1;            //Bayrak 1 iken ikinci kez
+		  }                                             //gelinirse zaman aşımı
+		  sistem_zamani._2Hz_bayrak = 1;                //İlgili bayrağı kaldır
 	  }
-	  if(sistem_zamani.clock_tick_1_ms % 20 == 0 )
+	  if(sistem_zamani.clock_tick_1_ms % 20 == 0 )		//20ms periyodu mu?
 	  {
 		  if(sistem_zamani._50Hz_bayrak == 1)
 		  {
-			  sistem_zamani.zaman_asimi = 1;
-		  }
-		  sistem_zamani._50Hz_bayrak = 1;
+			  sistem_zamani.zaman_asimi = 1;            //Bayrak 1 iken ikinci kez
+		  }                                             //gelinirse zaman aşımı
+		  sistem_zamani._50Hz_bayrak = 1;               //İlgili bayrağı kaldır
 	  }
-	  if(sistem_zamani.clock_tick_1_ms % 10 == 0)
+	  if(sistem_zamani.clock_tick_1_ms % 10 == 0)		//10ms periyodu mu?
 	  {
 		  if(sistem_zamani._100Hz_bayrak == 1)
 		  {
-			  sistem_zamani.zaman_asimi = 1;
-		  }
-		  sistem_zamani._100Hz_bayrak = 1;
+			  sistem_zamani.zaman_asimi = 1;            //Bayrak 1 iken ikinci kez
+		  }                                             //gelinirse zaman aşımı
+		  sistem_zamani._100Hz_bayrak = 1;              //İlgili bayrağı kaldır
 	  }
-	  if(sistem_zamani.clock_tick_1_ms % 5 == 0)
+	  if(sistem_zamani.clock_tick_1_ms % 5 == 0)		//5ms periyodu mu?
 	  {
 		  if(sistem_zamani._200Hz_bayrak == 1)
 		  {
-			  sistem_zamani.zaman_asimi = 1;
-		  }
-		  sistem_zamani._200Hz_bayrak = 1;
+			  sistem_zamani.zaman_asimi = 1;            //Bayrak 1 iken ikinci kez
+		  }                                             //gelinirse zaman aşımı
+		  sistem_zamani._200Hz_bayrak = 1;              //İlgili bayrağı kaldır
 	  }
-//	  if(sistem_zamani.clock_tick_1_ms % 2 == 0)
-//	  {
-//		  if(sistem_zamani._500Hz_bayrak == 1)
-//		  {
-//			  sistem_zamani.zaman_asimi = 1;
-//		  }
-//		  sistem_zamani._500Hz_bayrak = 1;
-//	  }
-		HAL_TIM_Base_Start_IT(&htim2);
+
+		HAL_TIM_Base_Start_IT(&htim2);					//Timer başlat
 
   }
-  else if(htim == &htim3)
-  {
-	  _5_saniye ++;
-	  if(_5_saniye == 5)
-	  {
-		  lcd.menu = SAAT;
-		  lcd.secili = 1;
-		  menu_ac(lcd.menu, lcd.secili);
-		  HAL_TIM_Base_Stop_IT(&htim3);
-		  htim3.Instance->CNT = 0x00;
-	  }
-  }
+
 }
 
 

@@ -213,37 +213,34 @@ void EXTI4_IRQHandler(void)
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
   /* USER CODE BEGIN EXTI4_IRQn 1 */
-  HAL_TIM_Base_Stop_IT(&htim3);
-  htim3.Instance->CNT = 0x00;
-  HAL_TIM_Base_Start_IT(&htim3);
 
-	if(timer_durum == 1)
+	/* Hareket butonuna basıldığında bu kesme fonksiyonuna gelinir
+	 * Mevcut menüde hareket edilir.
+	 */
+	if(timer_durum == 1)  	//Son butona basılışından 20 ms geçti ise
 	{
 		switch (lcd.menu)
 		{
 		case ANA_SAYFA:
-			if(lcd.secili == ANA_SAYFA_MAX_SATIR)
-			{
+			if(lcd.secili == ANA_SAYFA_MAX_SATIR)	//Anasayfada maksimum satır sayısına
+			{										//uludaşıldıysa sıfırla
 				lcd.secili = 1;
 			}
 			else
 			{
 				lcd.secili ++;
 			}
-//			menu_ac(ANA_SAYFA, lcd.secili);
 			break;
-		case ADIM:
-
+		case ADIM:					//Adım menüsünde
 			lcd.menu = ADIM;
 			lcd.secili = 1;
 			menu_ac(ADIM, 1);
 			break;
-		case NABIZ:
+		case NABIZ:					//Nabız menüsünde
 			lcd.menu = NABIZ;
 			lcd.secili = 1;
-//			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case TELEFON:
+		case TELEFON:				//Telefon menüsünde
 			if(lcd.secili == TELEFON_MAX_SATIR)
 			{
 				lcd.secili = 1;
@@ -252,15 +249,13 @@ void EXTI4_IRQHandler(void)
 			{
 				lcd.secili ++;
 			}
-//			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case SICAKLIK:
+		case SICAKLIK:				//Sıcaklık menüsünde
 			lcd.secili = 1;
-//			menu_ac(lcd.menu, 1);
 			break;
-		case SAAT:
+		case SAAT:					//Saat yüzü menüsünde
 			lcd.secili = 1;
-		case SAAT_AYAR:
+		case SAAT_AYAR:				//Saat ayarlama menüsünde
 			switch(zaman_ayarlama.saat_ayar_digit)
 			{
 			case SAAT_ONDALIK:
@@ -323,7 +318,7 @@ void EXTI4_IRQHandler(void)
 		default:
 			break;
 		}
-		HAL_TIM_Base_Start_IT(&htim1);
+		HAL_TIM_Base_Start_IT(&htim1);	//Buton debouncing önlemek için timer başlat.
 		timer_durum = 0;
 	}
 	else
@@ -352,48 +347,41 @@ void DMA1_Channel6_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-	//SECME BUTONU
+
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
-  HAL_TIM_Base_Stop_IT(&htim3);
-  htim3.Instance->CNT = 0x00;
-  HAL_TIM_Base_Start_IT(&htim3);
 
-	if(timer_durum == 1)
+	//Seçme butonuna basıldığında bu kesme fonksiyonuna gelinir
+	if(timer_durum == 1)	//Son butona basılışından 20 ms geçti ise
 	{
 		switch (lcd.menu)
 		{
-		case ANA_SAYFA:
+		case ANA_SAYFA:			//Anasayfa menüsünde ise
 			switch(lcd.secili)
 			{
-			case 1:				//nabiz
+			case 1:				//Seçili olan nabiz ise
 				lcd.menu = NABIZ;
 				lcd.secili = 1;
-//				menu_ac(lcd.menu, lcd.secili);
 				break;
-			case 2:				//adim
+			case 2:				//Seçili olan adım ise
 				lcd.menu = ADIM;
 				lcd.secili = 1;
-//				menu_ac(lcd.menu, lcd.secili);
 				break;
-			case 3:				//tel
+			case 3:				//Seçili olan telefon ise
 				lcd.menu = TELEFON;
 				lcd.secili = 1;
-//				menu_ac(lcd.menu, lcd.secili);
 				break;
-			case 4:			//sicaklik
+			case 4:				//Seçili olan sicaklik ise
 				lcd.menu = SICAKLIK;
 				lcd.secili = 1;
-//				menu_ac(lcd.menu, lcd.secili);
 				break;
-			case 5:			//SAAT YUZU
+			case 5:				//Seçili olan saat yüzü ise
 				lcd.menu = SAAT;
 				lcd.secili = 1;
-//				menu_ac(lcd.menu, lcd.secili);
 				break;
-			case 6:			//saat ayar
+			case 6:				//Seçili olan saat ayarlamada ise
 				lcd.menu = SAAT_AYAR;
 				lcd.secili = 1;
 				break;
@@ -401,66 +389,65 @@ void EXTI9_5_IRQHandler(void)
 				break;
 			}
 			break;
-		case ADIM:
+		case ADIM:			//Adım menüsünde ise
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-//			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case TELEFON:
+		case TELEFON:		//Telefon menüsünde ise
 			switch(lcd.secili)
 			{
 			case 1:	//TODO: Telefona baglan secenegi aktif degil
 				break;
 			case 2: //TODO: Telefon baglanti kes secenegi aktif degil
 				break;
-			case 3:
+			case 3:	//Geri dön seçili ise
 				lcd.menu = ANA_SAYFA;
 				lcd.secili = 1;
-//				menu_ac(lcd.menu, lcd.secili);
 				break;
 			default:
 				break;
 			}
 			break;
 		case SICAKLIK:
+			//Geri dön seçili anasayfaya dön
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-//			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case NABIZ:
+		case NABIZ:			//Nabız menüsünde ise
+			//Geri dön seçili anasayfaya dön
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-//			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case SAAT:
+		case SAAT:			//Saat yüzü menüsünde ise
+			//Geri dön seçili anasayfaya dön
 			lcd.menu = ANA_SAYFA;
 			lcd.secili = 1;
-//			menu_ac(lcd.menu, lcd.secili);
 			break;
-		case SAAT_AYAR:
-			switch(zaman_ayarlama.saat_ayar_digit)
+		case SAAT_AYAR:		//Saat ayarlama menüsünde ise
+			switch(zaman_ayarlama.saat_ayar_digit)	//Secili digit değerlendir
 			{
-			case SAAT_ONDALIK:
+			case SAAT_ONDALIK:		//Secili digit saatin ondalığı ise
 				zaman_ayarlama.saat_ayar_digit = SAAT_BIRLIK;
 				break;
-			case SAAT_BIRLIK:
+			case SAAT_BIRLIK:		//Secili digit saatin birliği ise
 				zaman_ayarlama.saat_ayar_digit = DAKIKA_ONDALIK;
 				break;
-			case DAKIKA_ONDALIK:
+			case DAKIKA_ONDALIK:	//Secili digit dakikanın ondalığı ise
 				zaman_ayarlama.saat_ayar_digit = DAKIKA_BIRLIK;
 				break;
-			case DAKIKA_BIRLIK:
+			case DAKIKA_BIRLIK:		//Secili digit dakikanın birliği ise
 				zaman_ayarlama.saat_ayar_digit = SANIYE_ONDALIK;
 				break;
-			case SANIYE_ONDALIK:
+			case SANIYE_ONDALIK:	//Secili digit saniyenin ondalığı ise
 				zaman_ayarlama.saat_ayar_digit = SANIYE_BIRLIK;
 				break;
-			case SANIYE_BIRLIK:
+			case SANIYE_BIRLIK:		//Secili digit saniyenin birliği ise
 				zaman_ayarlama.saat_ayar_digit = SAAT_ONDALIK;
-				ds3231_zaman_ayarla(&hi2c1, 0xD0, zaman_ayarlama);
 				zaman_ayarlama.saniye = 0;
 				zaman_ayarlama.saat   = 0;
 				zaman_ayarlama.dakika = 0;
+				/* Girilen zamanı RTC modülüne işle*/
+				ds3231_zaman_ayarla(&hi2c1, DS3231_SLAVE_ADDR, zaman_ayarlama);
 				lcd.menu = ANA_SAYFA;
 				lcd.secili = 1;
 				break;
